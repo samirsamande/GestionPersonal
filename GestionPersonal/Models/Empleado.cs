@@ -21,6 +21,7 @@ public class Empleado
     [Range(typeof(decimal), "1", "100000", ErrorMessage = "El salario debe estar entre {1} y {2}.")]
     [Column(TypeName = "decimal(18,2)")]
     [DataType(DataType.Currency)]
+    [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = false)]
     [Display(Name = "Salario")]
     public decimal Salario { get; set; }
 }
