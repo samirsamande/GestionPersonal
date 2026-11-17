@@ -5,7 +5,14 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    var mensajes = options.ModelBindingMessageProvider;
+    mensajes.SetValueMustBeANumberAccessor(campo => $"El campo {campo} debe ser un número válido.");
+    mensajes.SetAttemptedValueIsInvalidAccessor((valor, campo) => $"El valor '{valor}' no es válido para {campo}.");
+    mensajes.SetValueIsInvalidAccessor(valor => $"El valor '{valor}' no es válido.");
+    mensajes.SetValueMustNotBeNullAccessor(valor => "Debe ingresar un valor.");
+});
 
 var app = builder.Build();
 
