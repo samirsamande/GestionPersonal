@@ -1,4 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
+
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Cadena de conexión 'DefaultConnection' no encontrada.");
@@ -15,6 +18,14 @@ builder.Services.AddControllersWithViews(options =>
 });
 
 var app = builder.Build();
+
+var supportedCultures = new[] { new CultureInfo("en-US") };
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("en-US"),
+    SupportedCultures = supportedCultures,
+    SupportedUICultures = supportedCultures
+});
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
