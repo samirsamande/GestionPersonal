@@ -128,16 +128,20 @@ public class DepartamentosController : Controller
     }
 
     // POST: DEPARTAMENTOS/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? id)
+    [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var departamento = await _context.Departamento.FindAsync(id);
-        if (departamento != null)
+        if (departamento == null) return RedirectToAction(nameof(Index));
+
+        if (await _context.Empleado.AnyAsync(e => e.DepartamentoId == id))
         {
-            _context.Departamento.Remove(departamento);
+            ModelState.AddModelError(string.Empty,
+                "No se puede eliminar: el departamento tiene empleados asignados.");
+            return View("Delete", departamento);
         }
 
+        _context.Departamento.Remove(departamento);
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
