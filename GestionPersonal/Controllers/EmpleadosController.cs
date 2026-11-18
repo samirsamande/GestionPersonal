@@ -1,53 +1,40 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using GestionPersonal.Models;
 using GestionPersonal.Data;
+using GestionPersonal.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+
+namespace GestionPersonal.Controllers;
 
 public class EmpleadosController : Controller
 {
     private readonly ApplicationDbContext _context;
+    public EmpleadosController(ApplicationDbContext context) => _context = context;
 
-    public EmpleadosController(ApplicationDbContext context)
+    public async Task<IActionResult> Index()
     {
-        _context = context;
+        var empleados = _context.Empleado.Include(e => e.Departamento);
+        return View(await empleados.ToListAsync());
     }
 
-    // GET: EMPLEADOS
-    public async Task<IActionResult> Index()    
-    {
-        return View(await _context.Empleado.ToListAsync());
-    }
-
-    // GET: EMPLEADOS/Details/5
     public async Task<IActionResult> Details(int? id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
+        if (id == null) return NotFound();
         var empleado = await _context.Empleado
+            .Include(e => e.Departamento)
             .FirstOrDefaultAsync(m => m.Id == id);
-        if (empleado == null)
-        {
-            return NotFound();
-        }
-
+        if (empleado == null) return NotFound();
         return View(empleado);
     }
 
-    // GET: EMPLEADOS/Create
     public IActionResult Create()
     {
+        CargarDepartamentos();
         return View();
     }
 
-    // POST: EMPLEADOS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Nombre,Cargo,Salario")] Empleado empleado)
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create([Bind("Id,Nombre,Cargo,Salario,DepartamentoId")] Empleado empleado)
     {
         if (ModelState.IsValid)
         {
@@ -55,37 +42,23 @@ public class EmpleadosController : Controller
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        CargarDepartamentos(empleado.DepartamentoId);
         return View(empleado);
     }
 
-    // GET: EMPLEADOS/Edit/5
     public async Task<IActionResult> Edit(int? id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
+        if (id == null) return NotFound();
         var empleado = await _context.Empleado.FindAsync(id);
-        if (empleado == null)
-        {
-            return NotFound();
-        }
+        if (empleado == null) return NotFound();
+        CargarDepartamentos(empleado.DepartamentoId);
         return View(empleado);
     }
 
-    // POST: EMPLEADOS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,Nombre,Cargo,Salario")] Empleado empleado)
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,Cargo,Salario,DepartamentoId")] Empleado empleado)
     {
-        if (id != empleado.Id)
-        {
-            return NotFound();
-        }
-
+        if (id != empleado.Id) return NotFound();
         if (ModelState.IsValid)
         {
             try
@@ -95,55 +68,37 @@ public class EmpleadosController : Controller
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!EmpleadoExists(empleado.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                if (!await _context.Empleado.AnyAsync(e => e.Id == id)) return NotFound();
+                throw;
             }
             return RedirectToAction(nameof(Index));
         }
+        CargarDepartamentos(empleado.DepartamentoId);
         return View(empleado);
     }
 
-    // GET: EMPLEADOS/Delete/5
     public async Task<IActionResult> Delete(int? id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
+        if (id == null) return NotFound();
         var empleado = await _context.Empleado
+            .Include(e => e.Departamento)
             .FirstOrDefaultAsync(m => m.Id == id);
-        if (empleado == null)
-        {
-            return NotFound();
-        }
-
+        if (empleado == null) return NotFound();
         return View(empleado);
     }
 
-    // POST: EMPLEADOS/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? id)
+    [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var empleado = await _context.Empleado.FindAsync(id);
         if (empleado != null)
         {
             _context.Empleado.Remove(empleado);
+            await _context.SaveChangesAsync();
         }
-
-        await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
-    private bool EmpleadoExists(int? id)
-    {
-        return _context.Empleado.Any(e => e.Id == id);
-    }
+    private void CargarDepartamentos(int? seleccionado = null) =>
+        ViewData["DepartamentoId"] = new SelectList(_context.Departamento, "Id", "Nombre", seleccionado);
 }
