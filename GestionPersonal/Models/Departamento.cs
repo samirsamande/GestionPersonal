@@ -14,4 +14,6 @@ public class Departamento
     [StringLength(150, ErrorMessage = "La ubicación no puede superar los {1} caracteres.")]
     [Display(Name = "Ubicación")]
     public string? Ubicacion { get; set; }
+
+    public ICollection<Empleado> Empleados { get; set; } = new List<Empleado>();
 }

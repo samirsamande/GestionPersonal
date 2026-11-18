@@ -24,4 +24,11 @@ public class Empleado
     [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = false)]
     [Display(Name = "Salario")]
     public decimal Salario { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar un departamento.")]
+    [Display(Name = "Departamento")]
+    public int DepartamentoId { get; set; }
+
+    [Display(Name = "Departamento")]
+    public Departamento? Departamento { get; set; }
 }
