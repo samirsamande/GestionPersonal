@@ -2,21 +2,25 @@ using GestionPersonal.Data;
 using GestionPersonal.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionPersonal.Controllers;
 
+[Authorize]         
 public class EmpleadosController : Controller
 {
     private readonly ApplicationDbContext _context;
     public EmpleadosController(ApplicationDbContext context) => _context = context;
 
+    [AllowAnonymous]
     public async Task<IActionResult> Index()
     {
         var empleados = _context.Empleado.Include(e => e.Departamento);
         return View(await empleados.ToListAsync());
     }
 
+    [AllowAnonymous]
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null) return NotFound();
