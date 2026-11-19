@@ -31,6 +31,7 @@ public class EmpleadosController : Controller
         return View(empleado);
     }
 
+    [Authorize(Roles = RolesApp.Gerente)]
     public IActionResult Create()
     {
         CargarDepartamentos();
@@ -38,6 +39,7 @@ public class EmpleadosController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
+    [Authorize(Roles = RolesApp.Gerente)]
     public async Task<IActionResult> Create([Bind("Id,Nombre,Cargo,Salario,DepartamentoId")] Empleado empleado)
     {
         if (ModelState.IsValid)
@@ -50,6 +52,7 @@ public class EmpleadosController : Controller
         return View(empleado);
     }
 
+    [Authorize(Roles = RolesApp.Gerente)]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null) return NotFound();
@@ -60,6 +63,7 @@ public class EmpleadosController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
+    [Authorize(Roles = RolesApp.Gerente)]
     public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,Cargo,Salario,DepartamentoId")] Empleado empleado)
     {
         if (id != empleado.Id) return NotFound();
@@ -81,6 +85,7 @@ public class EmpleadosController : Controller
         return View(empleado);
     }
 
+    [Authorize(Roles = RolesApp.Gerente)]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null) return NotFound();
@@ -92,6 +97,7 @@ public class EmpleadosController : Controller
     }
 
     [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
+    [Authorize(Roles = RolesApp.Gerente)]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var empleado = await _context.Empleado.FindAsync(id);

@@ -1,8 +1,10 @@
+using GestionPersonal.Data;
+using GestionPersonal.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using GestionPersonal.Models;
-using GestionPersonal.Data;
 
+[Authorize]
 public class DepartamentosController : Controller
 {
     private readonly ApplicationDbContext _context;
@@ -13,12 +15,14 @@ public class DepartamentosController : Controller
     }
 
     // GET: DEPARTAMENTOS
+    [AllowAnonymous]
     public async Task<IActionResult> Index()    
     {
         return View(await _context.Departamento.ToListAsync());
     }
 
     // GET: DEPARTAMENTOS/Details/5
+    [AllowAnonymous]
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -37,6 +41,7 @@ public class DepartamentosController : Controller
     }
 
     // GET: DEPARTAMENTOS/Create
+    [Authorize(Roles = RolesApp.Gerente)]
     public IActionResult Create()
     {
         return View();
@@ -47,6 +52,7 @@ public class DepartamentosController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = RolesApp.Gerente)]
     public async Task<IActionResult> Create([Bind("Id,Nombre,Ubicacion")] Departamento departamento)
     {
         if (ModelState.IsValid)
@@ -59,6 +65,7 @@ public class DepartamentosController : Controller
     }
 
     // GET: DEPARTAMENTOS/Edit/5
+    [Authorize(Roles = RolesApp.Gerente)]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
@@ -79,6 +86,7 @@ public class DepartamentosController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = RolesApp.Gerente)]
     public async Task<IActionResult> Edit(int? id, [Bind("Id,Nombre,Ubicacion")] Departamento departamento)
     {
         if (id != departamento.Id)
@@ -110,6 +118,7 @@ public class DepartamentosController : Controller
     }
 
     // GET: DEPARTAMENTOS/Delete/5
+    [Authorize(Roles = RolesApp.Gerente)]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
@@ -129,6 +138,7 @@ public class DepartamentosController : Controller
 
     // POST: DEPARTAMENTOS/Delete/5
     [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
+    [Authorize(Roles = RolesApp.Gerente)]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var departamento = await _context.Departamento.FindAsync(id);
