@@ -1,12 +1,20 @@
-﻿@using Microsoft.AspNetCore.Identity
+﻿@using System.Security.Claims
+@using Microsoft.AspNetCore.Identity
 @using GestionPersonal.Data
 @inject SignInManager<ApplicationUser> SignInManager
 
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
+        var roles = string.Join(", ", User.FindAll(ClaimTypes.Role).Select(c => c.Value));
         <li class="nav-item">
-            <span class="nav-link text-dark">Hola, @User.Identity?.Name</span>
+            <span class="nav-link text-dark">
+                Hola, @User.Identity?.Name
+                @if (!string.IsNullOrEmpty(roles))
+                {
+                    <span class="badge bg-secondary">@roles</span>
+                }
+            </span>
         </li>
         <li class="nav-item">
             <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout"
