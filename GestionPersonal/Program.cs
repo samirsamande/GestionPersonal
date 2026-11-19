@@ -26,6 +26,11 @@ builder.Services.AddControllersWithViews(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    await IdentitySeeder.InicializarAsync(scope.ServiceProvider);
+}
+
 var supportedCultures = new[] { new CultureInfo("en-US") };
 app.UseRequestLocalization(new RequestLocalizationOptions
 {
