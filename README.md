@@ -19,7 +19,12 @@ Una empresa necesita controlar su personal. Hoy registra la información en hoja
 | 5 | Ronny Adrian Sanchez Garcia | Fase 5: roles y restricción por rol |
 
 ## Usuarios de prueba
-(Se completará en la Fase 5.)
+| Rol | Correo | Contraseña | Permisos |
+|---|---|---|---|
+| Gerente (gestión) | gerente@empresa.com | Gerente123* | Crea, edita y elimina en Departamentos y Empleados |
+| Colaborador (consulta) | colaborador@empresa.com | Colaborador123* | Solo consulta: ve la lista y el detalle |
+
+Los visitantes sin sesión también pueden ver la lista y el detalle. Cualquier usuario registrado desde la página queda sin rol y no puede modificar información.
 
 ## Cómo ejecutar el proyecto
 1. Clonar el repositorio.
